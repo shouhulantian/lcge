@@ -373,8 +373,7 @@ class LCGE(TKBCModel):
 
         return ((
                (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
-               (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t() +
-               self.w_static
+               (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t()
             ), regularizer,
                self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
                rule
