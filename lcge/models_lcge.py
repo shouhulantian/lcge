@@ -213,11 +213,17 @@ class LCGE(TKBCModel):
             (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) * rhs[0] +
             (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) * rhs[1],
             1, keepdim=True
-        ) + self.w_static * torch.sum(
-            (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
-            (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
-            1, keepdim=True
-        )
+        ) + self.w_static
+
+        # return torch.sum(
+        #     (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) * rhs[0] +
+        #     (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) * rhs[1],
+        #     1, keepdim=True
+        # ) + self.w_static * torch.sum(
+        #     (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
+        #     (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
+        #     1, keepdim=True
+        # )
 
     def forward(self, x):
         lhs = self.embeddings[0](x[:, 0])
