@@ -225,7 +225,7 @@ class LCGE(TKBCModel):
         rel_no_time = self.embeddings[3](x[:, 1])
         rhs = self.embeddings[0](x[:, 2])
         time = self.embeddings[2](x[:, 3])
-        transt = self.embeddings[4](torch.LongTensor([0]).cuda())
+        transt = self.embeddings[4](torch.LongTensor([0]).to('cuda' if torch.cuda.is_available() else 'cpu'))
 
         lhs = lhs[:, :self.rank], lhs[:, self.rank:]
         rel = rel[:, :self.rank], rel[:, self.rank:]
@@ -271,7 +271,7 @@ class LCGE(TKBCModel):
                 rel1_emb = self.embeddings[3](rel_1)
                 for rel_2 in self.rule1_p2[rel_1_str]:                
                     weight_r = self.rule1_p2[rel_1_str][rel_2]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([int(rel_2)]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([int(rel_2)]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rule += weight_r * torch.sum(torch.abs(rel1_emb - rel2_emb) ** 3)
     
         for rel_1 in x[:, 1]:
@@ -281,7 +281,7 @@ class LCGE(TKBCModel):
                 rel1_split = rel1_emb[:self.rank], rel1_emb[self.rank:]
                 for rel_2 in self.rule1_p2[rel_1_str]:           
                     weight_r = self.rule1_p2[rel_1_str][rel_2]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([int(rel_2)]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([int(rel_2)]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rel2_split = rel2_emb[:self.rank], rel2_emb[self.rank:]
                     tt = rel2_split[0] * transt[0][0], rel2_split[1] * transt[0][0], rel2_split[0] * transt[1][0], rel2_split[1] * transt[1][0]
                     rtt = tt[0] - tt[3], tt[1] + tt[2]
@@ -295,8 +295,8 @@ class LCGE(TKBCModel):
                 for body in self.rule2_p1[rel_1]:
                     rel_2, rel_3 = body
                     weight_r = self.rule2_p1[rel_1][body]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).cuda())[0]
-                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
+                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rel2_split = rel2_emb[:self.rank], rel2_emb[self.rank:]
                     rel3_split = rel3_emb[:self.rank], rel3_emb[self.rank:]
                     tt2 = rel2_split[0] * transt[0][0], rel2_split[1] * transt[0][0], rel2_split[0] * transt[1][0], rel2_split[1] * transt[1][0]
@@ -317,8 +317,8 @@ class LCGE(TKBCModel):
                 for body in self.rule2_p2[rel_1]:
                     rel_2, rel_3 = body
                     weight_r = self.rule2_p2[rel_1][body]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).cuda())[0]
-                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
+                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rel2_split = rel2_emb[:self.rank], rel2_emb[self.rank:]
                     rel3_split = rel3_emb[:self.rank], rel3_emb[self.rank:]
                     tt2 = rel2_split[0] * transt[0][0], rel2_split[1] * transt[0][0], rel2_split[0] * transt[1][0], rel2_split[1] * transt[1][0]
@@ -337,8 +337,8 @@ class LCGE(TKBCModel):
                 for body in self.rule2_p3[rel_1]:
                     rel_2, rel_3 = body
                     weight_r = self.rule2_p3[rel_1][body]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).cuda())[0]
-                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
+                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rel2_split = rel2_emb[:self.rank], rel2_emb[self.rank:]
                     rtt3 = rel3_emb[:self.rank], rel3_emb[self.rank:]
                     tt2 = rel2_split[0] * transt[0][0], rel2_split[1] * transt[0][0], rel2_split[0] * transt[1][0], rel2_split[1] * transt[1][0]
@@ -355,8 +355,8 @@ class LCGE(TKBCModel):
                 for body in self.rule2_p4[rel_1]:
                     rel_2, rel_3 = body
                     weight_r = self.rule2_p4[rel_1][body]
-                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).cuda())[0]
-                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).cuda())[0]
+                    rel2_emb = self.embeddings[3](torch.LongTensor([rel_2]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
+                    rel3_emb = self.embeddings[3](torch.LongTensor([rel_3]).to('cuda' if torch.cuda.is_available() else 'cpu'))[0]
                     rtt2 = rel2_emb[:self.rank], rel2_emb[self.rank:]
                     rtt3 = rel3_emb[:self.rank], rel3_emb[self.rank:]
                     tt = rtt3[0] * rtt2[0], rtt3[1] * rtt2[0], rtt3[0] * rtt2[1], rtt3[1] * rtt2[1]
@@ -364,15 +364,25 @@ class LCGE(TKBCModel):
                     #print("rel1_split:\t", rel1_split[0])
                     rule += weight_r * (torch.sum(torch.abs(rel1_split[0] - rtt[0]) ** 3) + torch.sum(torch.abs(rel1_split[1] - rtt[1]) ** 3))
 
+
         return ((
                (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
                (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t() +
-               self.w_static * ((h_static[0] * r_static[0] - h_static[1] * r_static[1]) @ right_static[0].t() +
-               (h_static[1] * r_static[0] + h_static[0] * r_static[1]) @ right_static[1].t())
+               self.w_static
             ), regularizer,
                self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
                rule
         )
+
+        # return ((
+        #        (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
+        #        (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t() +
+        #        self.w_static * ((h_static[0] * r_static[0] - h_static[1] * r_static[1]) @ right_static[0].t() +
+        #        (h_static[1] * r_static[0] + h_static[0] * r_static[1]) @ right_static[1].t())
+        #     ), regularizer,
+        #        self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
+        #        rule
+        # )
 
     def forward_over_time(self, x):
         lhs = self.embeddings[0](x[:, 0])
@@ -421,6 +431,25 @@ class LCGE(TKBCModel):
 
         rt = rel[0] * time[0], rel[1] * time[0], rel[0] * time[1], rel[1] * time[1]
         full_rel = (rt[0] - rt[3]) + rnt[0], (rt[1] + rt[2]) + rnt[1]
+
+        h_static = self.static_embeddings[0](queries[:, 0])
+        r_static = self.static_embeddings[1](queries[:, 1])
+        t_static = self.static_embeddings[0](queries[:, 2])
+
+        h_static = h_static[:, :self.rank_static], h_static[:, self.rank_static:]
+        r_static = r_static[:, :self.rank_static], r_static[:, self.rank_static:]
+        t_static = t_static[:, :self.rank_static], t_static[:, self.rank_static:]
+
+        # + self.w_static * torch.sum(
+        #     (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
+        #     (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
+        #     1, keepdim=True
+        # )
+        #
+        # return torch.cat([
+        #     lhs[0] * full_rel[0] - lhs[1] * full_rel[1],
+        #     lhs[1] * full_rel[0] + lhs[0] * full_rel[1]
+        # ], 1)
 
         return torch.cat([
             lhs[0] * full_rel[0] - lhs[1] * full_rel[1],

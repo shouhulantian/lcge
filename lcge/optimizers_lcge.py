@@ -35,7 +35,7 @@ class TKBCOptimizer(object):
             while b_begin < examples.shape[0]:
                 input_batch = actual_examples[
                     b_begin:b_begin + self.batch_size
-                ].cuda()
+                ].to('cuda' if torch.cuda.is_available() else 'cpu')
                 predictions, factors, time, rule = self.model.forward(input_batch)
                 truth = input_batch[:, 2]
 
