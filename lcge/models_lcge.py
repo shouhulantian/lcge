@@ -337,7 +337,8 @@ class LCGE(TKBCModel):
                     rtt = tt[0] - tt[3], tt[1] + tt[2]
                     #print("rel1_split:\t", rel1_split[0])
                     rule += weight_r * (torch.sum(torch.abs(rel1_split[0] - rtt[0]) ** 3) + torch.sum(torch.abs(rel1_split[1] - rtt[1]) ** 3))
-        
+
+
         for rel_1 in x[:, 1]:
             if rel_1 in self.rule2_p3:
                 rel1_emb = self.embeddings[3](rel_1)
