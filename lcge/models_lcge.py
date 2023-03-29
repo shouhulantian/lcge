@@ -463,6 +463,7 @@ class LCGE(TKBCModel):
             lhs[1] * full_rel[0] + lhs[0] * full_rel[1]
         ], 1)
 
+
     def add_L2(self, x):
         h_static = self.static_embeddings[0](x[:, 0])
         r_static = self.static_embeddings[1](x[:, 1])
