@@ -52,6 +52,8 @@ class TKBCModel(nn.Module, ABC):
                     q = self.get_queries(these_queries)
 
                     scores = q @ rhs
+                    scores += self.add_L2(these_queries)
+
                     targets = self.score(these_queries)
                     assert not torch.any(torch.isinf(scores)), "inf scores"
                     assert not torch.any(torch.isnan(scores)), "nan scores"
@@ -209,21 +211,21 @@ class LCGE(TKBCModel):
         t_static = t_static[:, :self.rank_static], t_static[:, self.rank_static:]
         #print("h size:{}\tr size:{}\ttsize:{}".format(h_static[0].shape, r_static[0].shape, t_static[0].shape))
 
-        return torch.sum(
-            (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) * rhs[0] +
-            (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) * rhs[1],
-            1, keepdim=True
-        ) + self.w_static
-
         # return torch.sum(
         #     (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) * rhs[0] +
         #     (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) * rhs[1],
         #     1, keepdim=True
-        # ) + self.w_static * torch.sum(
-        #     (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
-        #     (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
-        #     1, keepdim=True
-        # )
+        # ) + self.w_static
+
+        return torch.sum(
+            (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) * rhs[0] +
+            (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) * rhs[1],
+            1, keepdim=True
+        ) + self.w_static * torch.sum(
+            (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
+            (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
+            1, keepdim=True
+        )
 
     def forward(self, x):
         lhs = self.embeddings[0](x[:, 0])
@@ -371,23 +373,23 @@ class LCGE(TKBCModel):
                     rule += weight_r * (torch.sum(torch.abs(rel1_split[0] - rtt[0]) ** 3) + torch.sum(torch.abs(rel1_split[1] - rtt[1]) ** 3))
 
 
-        return ((
-               (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
-               (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t()
-            ), regularizer,
-               self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
-               rule
-        )
-
         # return ((
         #        (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
-        #        (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t() +
-        #        self.w_static * ((h_static[0] * r_static[0] - h_static[1] * r_static[1]) @ right_static[0].t() +
-        #        (h_static[1] * r_static[0] + h_static[0] * r_static[1]) @ right_static[1].t())
+        #        (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t()
         #     ), regularizer,
         #        self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
         #        rule
         # )
+
+        return ((
+               (lhs[0] * full_rel[0] - lhs[1] * full_rel[1]) @ right[0].t() +
+               (lhs[1] * full_rel[0] + lhs[0] * full_rel[1]) @ right[1].t() +
+               self.w_static * ((h_static[0] * r_static[0] - h_static[1] * r_static[1]) @ right_static[0].t() +
+               (h_static[1] * r_static[0] + h_static[0] * r_static[1]) @ right_static[1].t())
+            ), regularizer,
+               self.embeddings[2].weight[:-1] if self.no_time_emb else self.embeddings[2].weight,
+               rule
+        )
 
     def forward_over_time(self, x):
         lhs = self.embeddings[0](x[:, 0])
@@ -461,3 +463,16 @@ class LCGE(TKBCModel):
             lhs[1] * full_rel[0] + lhs[0] * full_rel[1]
         ], 1)
 
+    def add_L2(self, x):
+        h_static = self.static_embeddings[0](x[:, 0])
+        r_static = self.static_embeddings[1](x[:, 1])
+        t_static = self.static_embeddings[0](x[:, 2])
+
+        h_static = h_static[:, :self.rank_static], h_static[:, self.rank_static:]
+        r_static = r_static[:, :self.rank_static], r_static[:, self.rank_static:]
+        t_static = t_static[:, :self.rank_static], t_static[:, self.rank_static:]
+        return self.w_static * torch.sum(
+            (h_static[0] * r_static[0] - h_static[1] * r_static[1]) * t_static[0] +
+            (h_static[1] * r_static[0] + h_static[0] * r_static[1]) * t_static[1],
+            1, keepdim=True
+        )

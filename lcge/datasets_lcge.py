@@ -88,7 +88,7 @@ class TemporalDataset(object):
         if self.events is not None:
             return self.time_eval(model, split, n_queries, 'rhs', at)
         test = self.get_examples(split)
-        examples = torch.from_numpy(test.astype('int64')).cuda()
+        examples = torch.from_numpy(test.astype('int64')).to('cuda' if torch.cuda.is_available() else 'cpu')
         missing = [missing_eval]
         if missing_eval == 'both':
             missing = ['rhs', 'lhs']
