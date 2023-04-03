@@ -88,7 +88,7 @@ def main(args):
         model = {
             'LCGE': LCGE(sizes, args.rank, rules, args.weight_static, no_time_emb=args.no_time_emb),
         }[args.model]
-        model = model.cuda()
+        model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
         opt = optim.Adagrad(model.parameters(), lr=args.learning_rate)
 
