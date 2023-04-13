@@ -183,7 +183,7 @@ def main(args):
             "best_mrr": best_global_mrr,
             "best_hit": best_global_hit,
         },
-        os.path.join(output_dir, "best_model.pt"),
+        os.path.join(output_dir, "best_model_"+str(args.dataset)+".pt"),
     )
 
     print("The best model and parameters have been saved.")
@@ -252,17 +252,17 @@ if __name__ == "__main__":
 
 
 # load best model
-"""
-checkpoint = torch.load("best_model/best_model.pt")
-model.load_state_dict(checkpoint["model_state_dict"])
-best_params = checkpoint["params"]
-best_mrr = checkpoint["best_mrr"]
-best_hit = checkpoint["best_hit"]
-
-print("Loaded best model with parameters:")
-print(best_params)
-print(f"Best MRR: {best_mrr}")
-print(f"Best Hit: {best_hit}")
-
-"""
+# """
+# checkpoint = torch.load("best_model/best_model.pt")
+# model.load_state_dict(checkpoint["model_state_dict"])
+# best_params = checkpoint["params"]
+# best_mrr = checkpoint["best_mrr"]
+# best_hit = checkpoint["best_hit"]
+#
+# print("Loaded best model with parameters:")
+# print(best_params)
+# print(f"Best MRR: {best_mrr}")
+# print(f"Best Hit: {best_hit}")
+#
+# """
 
