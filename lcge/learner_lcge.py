@@ -19,6 +19,22 @@ from regularizers_rule import RuleSim
 import json
 
 
+def save_best_model(model, params, best_mrr, best_hit, dataset_name, model_name):
+    output_dir = "best_model"
+    os.makedirs(output_dir, exist_ok=True)
+
+    file_name = "best_model_{}_{}.pt".format(model_name, dataset_name)
+    torch.save(
+        {
+            "model_state_dict": model.state_dict(),
+            "params": params,
+            "best_mrr": best_mrr,
+            "best_hit": best_hit,
+        },
+        os.path.join(output_dir, file_name),
+    )
+    print(f"The best model and parameters have been saved to {file_name}.")
+
 
 def main(args):
     weight_static_values = [0.0, 0.3, 0.6, 0.9, 1.2, 1.5]
@@ -88,7 +104,7 @@ def main(args):
         model = {
             'LCGE': LCGE(sizes, args.rank, rules, args.weight_static, no_time_emb=args.no_time_emb),
         }[args.model]
-        model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
+        model = model.cuda()
 
         opt = optim.Adagrad(model.parameters(), lr=args.learning_rate)
 
@@ -162,31 +178,15 @@ def main(args):
                     if early_stopping > 10:
                         print("early stopping!")
                         break
-                if test['MRR'] > best_global_mrr:
-                    best_global_mrr = test['MRR']
-                    best_global_hit = test['hits@[1,3,10]']
-                    best_global_params = {
-                        'weight_static': weight_static,
-                    }
-                    best_global_model_state = model.state_dict()
-        print("The best test mrr is:\t", best_mrr)
-        print("The best test hits@1,3,10 are:\t", best_hit)
 
-    # save optimal model
-    output_dir = "best_model"
-    os.makedirs(output_dir, exist_ok=True)
+        if best_mrr > best_global_mrr:
+            best_global_mrr = best_mrr
+            best_global_hit = best_hit
+            best_global_params = {'weight_static': weight_static}
+            save_best_model(model, best_global_params, best_global_mrr, best_global_hit, args.dataset, args.model)
 
-    torch.save(
-        {
-            "model_state_dict": best_global_model_state,
-            "params": best_global_params,
-            "best_mrr": best_global_mrr,
-            "best_hit": best_global_hit,
-        },
-        os.path.join(output_dir, "best_model_"+str(args.dataset)+".pt"),
-    )
-
-    print("The best model and parameters have been saved.")
+            print("The best test mrr for weight static:{} is:\t".format(weight_static), best_mrr)
+            print("The best test hits@1,3,10 for weight static:{} are:\t".format(weight_static), best_hit)
 
 
 if __name__ == "__main__":
@@ -252,17 +252,17 @@ if __name__ == "__main__":
 
 
 # load best model
-# """
-# checkpoint = torch.load("best_model/best_model.pt")
-# model.load_state_dict(checkpoint["model_state_dict"])
-# best_params = checkpoint["params"]
-# best_mrr = checkpoint["best_mrr"]
-# best_hit = checkpoint["best_hit"]
-#
-# print("Loaded best model with parameters:")
-# print(best_params)
-# print(f"Best MRR: {best_mrr}")
-# print(f"Best Hit: {best_hit}")
-#
-# """
+"""
+checkpoint = torch.load("best_model/best_model.pt")
+model.load_state_dict(checkpoint["model_state_dict"])
+best_params = checkpoint["params"]
+best_mrr = checkpoint["best_mrr"]
+best_hit = checkpoint["best_hit"]
+
+print("Loaded best model with parameters:")
+print(best_params)
+print(f"Best MRR: {best_mrr}")
+print(f"Best Hit: {best_hit}")
+
+"""
 
