@@ -37,7 +37,7 @@ def save_best_model(model, params, best_mrr, best_hit, dataset_name, model_name)
 
 
 def main(args):
-    weight_static_values = [0.0, 0.3, 0.6, 0.9, 1.2, 1.5]
+    weight_static_values = [0.9]
 
     best_global_mrr = 0.0
     best_global_hit = 0.0
