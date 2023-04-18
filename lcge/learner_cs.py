@@ -97,7 +97,7 @@ def main(args):
                 """
                 m = (mrrs['lhs'] + mrrs['rhs']) / 2.
                 h = (hits['lhs'] + hits['rhs']) / 2.
-                return {'MRR': m, 'hits@[1,3,10]': h}
+                return {'MRR_all': m, 'hits@_all': h}
 
             if epoch < 0 or (epoch + 1) % args.valid_freq == 0:
                 if dataset.has_intervals():
@@ -115,14 +115,14 @@ def main(args):
                         for split in ['valid', 'test', 'train']
                     ]
                     print("epoch: ", epoch+1)
-                    print("valid: ", valid['MRR'])
-                    print("test: ", test['MRR'])
-                    print("train: ", train['MRR'])
+                    print("valid: ", valid['MRR_all'])
+                    print("test: ", test['MRR_all'])
+                    print("train: ", train['MRR_all'])
 
-                    print("test hits@n:\t", test['hits@[1,3,10]'])
+                    print("test hits@n:\t", test['hits@_all'])
                     if test['MRR'] > best_mrr:
-                        best_mrr = test['MRR']
-                        best_hit = test['hits@[1,3,10]']
+                        best_mrr = test['MRR_all']
+                        best_hit = test['hits@_all']
                         early_stopping = 0
                     else:
                         early_stopping += 1
