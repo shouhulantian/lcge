@@ -183,7 +183,7 @@ def main(args):
             best_global_mrr = best_mrr
             best_global_hit = best_hit
             best_global_params = {'weight_static': weight_static}
-            save_best_model(model, best_global_params, best_global_mrr, best_global_hit, args.dataset, args.model)
+            #save_best_model(model, best_global_params, best_global_mrr, best_global_hit, args.dataset, args.model)
 
             print("The best test mrr for weight static:{} is:\t".format(weight_static), best_mrr)
             print("The best test hits@1,3,10 for weight static:{} are:\t".format(weight_static), best_hit)
