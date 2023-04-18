@@ -188,6 +188,9 @@ def main(args):
             print("The best test mrr for weight static:{} is:\t".format(weight_static), best_mrr)
             print("The best test hits@1,3,10 for weight static:{} are:\t".format(weight_static), best_hit)
 
+    print(best_global_mrr)
+    print(best_global_hit)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
