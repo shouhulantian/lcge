@@ -105,9 +105,21 @@ def main(args):
                         dataset.eval(model, split, -1 if split != 'train' else 50000)
                         for split in ['valid', 'test', 'train']
                     ]
+                    print('-----------------------------------------')
                     print("valid: ", valid)
                     print("test: ", test)
                     print("train: ", train)
+                    print('*****************************************')
+
+                    if test['MRR_all'] > best_mrr:
+                        best_mrr = test['MRR_all']
+                        best_hit = test['hits@_all']
+                        early_stopping = 0
+                    else:
+                        early_stopping += 1
+                    if early_stopping > 10:
+                        print("early stopping!")
+                        break
 
                 else:
                     valid, test, train = [
@@ -120,15 +132,6 @@ def main(args):
                     print("train: ", train['MRR_all'])
 
                     print("test hits@n:\t", test['hits@_all'])
-                    if test['MRR'] > best_mrr:
-                        best_mrr = test['MRR_all']
-                        best_hit = test['hits@_all']
-                        early_stopping = 0
-                    else:
-                        early_stopping += 1
-                    if early_stopping > 10:
-                        print("early stopping!")
-                        break
 
         if best_mrr > best_global_mrr:
             best_global_mrr = best_mrr
@@ -145,7 +148,7 @@ if __name__ == '__main__':
         description="Commonsense-Guided Temporal KGE"
     )
     parser.add_argument(
-        '--dataset', type=str,
+        '--dataset', default='wikidata12k', type=str,
         help="Dataset name"
     )
     models = [
