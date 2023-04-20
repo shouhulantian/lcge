@@ -36,7 +36,7 @@ class TemporalDataset(object):
             
         try:
             inp_f = open(str(self.root / f'ts_diffs.pickle'), 'rb')
-            self.time_diffs = torch.from_numpy(pickle.load(inp_f)).cuda().float()
+            self.time_diffs = torch.from_numpy(pickle.load(inp_f)).to('cuda' if torch.cuda.is_available() else 'cpu').float()
             # print("Assume all timestamps are regularly spaced")
             # self.time_diffs = None
             inp_f.close()
@@ -181,7 +181,7 @@ class TemporalDataset(object):
             cur_batch.append((lhs, rel, rhs, date, full_time, only_begin, only_end, no_time))
             # once a batch is ready, call get_ranking and reset
             if len(cur_batch) == batch_size or id_event == len(eval_events) - 1:
-                cuda_batch = torch.cuda.LongTensor(cur_batch)
+                cuda_batch = torch.LongTensor(cur_batch).to('cuda' if torch.cuda.is_available() else 'cpu')
                 bbatch = torch.LongTensor(cur_batch)
                 batch_ranks = model.get_time_ranking(cuda_batch[:, :4], to_filter_batch, 500000)
 

@@ -127,6 +127,7 @@ class TKBCModel(nn.Module, ABC):
             while c_begin < self.sizes[2]:
                 rhs = self.get_rhs(c_begin, chunk_size)
                 scores = q @ rhs
+                scores += self.add_L2(q)
                 # set filtered and true scores to -1e6 to be ignored
                 # take care that scores are chunked
                 for i, (query, filter) in enumerate(zip(queries, filters)):
@@ -224,7 +225,7 @@ class LCGE(TKBCModel):
         rel_no_time = self.embeddings[3](x[:, 1])
         rhs = self.embeddings[0](x[:, 2])
         time = self.embeddings[2](x[:, 3])
-        transt = self.embeddings[4](torch.LongTensor([0]).cuda())
+        transt = self.embeddings[4](torch.LongTensor([0]).to('cuda' if torch.cuda.is_available() else 'cpu'))
 
         lhs = lhs[:, :self.rank], lhs[:, self.rank:]
         rel = rel[:, :self.rank], rel[:, self.rank:]
