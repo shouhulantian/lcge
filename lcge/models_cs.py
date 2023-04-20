@@ -127,7 +127,7 @@ class TKBCModel(nn.Module, ABC):
             while c_begin < self.sizes[2]:
                 rhs = self.get_rhs(c_begin, chunk_size)
                 scores = q @ rhs
-                scores += self.add_L2(q)
+                scores += self.add_L2(queries)
                 # set filtered and true scores to -1e6 to be ignored
                 # take care that scores are chunked
                 for i, (query, filter) in enumerate(zip(queries, filters)):
